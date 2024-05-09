@@ -42,10 +42,11 @@ def crop(vol):
     return x_min, x_max, y_min, y_max, z_min, z_max
 
 def normalize(vol):
-    mask = vol.sum(0) > 0
-    for k in range(4):
+    mask = vol.sum(0) > 0   # sum： through axis=0，then create a bool array
+    ########################################################################sum(0):first dim,mean sum same pixel through 4 modalities
+    for k in range(4):   #traverse 4 modalities
         x = vol[k, ...]
-        y = x[mask]
+        y = x[mask]   #################   mask size=x size  
         x = (x - y.mean()) / y.std()
         vol[k, ...] = x
 
@@ -68,6 +69,7 @@ for file_name in name_list:
     t1ce, t1ce_header = medio.load(os.path.join(src_path, file_name, case_id+'_t1ce.nii.gz'))
     t1, t1_header = medio.load(os.path.join(src_path, file_name, case_id+'_t1.nii.gz'))
     t2, t2_header = medio.load(os.path.join(src_path, file_name, case_id+'_t2.nii.gz'))
+    #medio.load 函数加载了指定路径的医学图像文件，返回一个元组 (image_data, header)
 
     vol = np.stack((flair, t1ce, t1, t2), axis=0).astype(np.float32)
     x_min, x_max, y_min, y_max, z_min, z_max = crop(vol)
